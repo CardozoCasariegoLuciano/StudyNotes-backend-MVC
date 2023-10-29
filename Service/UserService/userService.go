@@ -4,6 +4,7 @@ import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/devfeel/mapper"
@@ -24,7 +25,7 @@ func NewUserService() *userService {
 	return userS
 }
 
-func (userS *userService) ListAll() responseDto.ResponseDto {
+func (userS *userService) ListAll() (responseDto.ResponseDto, int) {
 	allusers := userS.storage.ListAll()
 	allUsersDto := []responseDto.UserDto{}
 
@@ -35,5 +36,5 @@ func (userS *userService) ListAll() responseDto.ResponseDto {
 	}
 
 	resp := responseDto.NewResponse("OK", "Lista de usuarios", allUsersDto)
-	return resp
+	return resp, http.StatusOK
 }

@@ -30,3 +30,15 @@ func (memory *memory) Save(user models.User) models.User {
 func (memory *memory) ListAll() []models.User {
 	return memory.users
 }
+
+func (memory *memory) FindUserByEmail(email string) models.User {
+	var userFinded models.User
+	for _, user := range memory.users {
+		if user.Email == email {
+			userFinded = user
+			break
+		}
+	}
+
+	return userFinded
+}

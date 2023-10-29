@@ -5,10 +5,15 @@ import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
+	errorcodes "CardozoCasariegoLuciano/StudyNotes/helpers/errorCodes"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/roles"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/devfeel/mapper"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var authS *authService
@@ -26,17 +31,45 @@ func NewAuthService() *authService {
 	return authS
 }
 
-func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) responseDto.ResponseDto {
-	userM := models.User{Role: "User"}
+func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (responseDto.ResponseDto, int) {
+	//Validate email
+	userEmail := auth.storage.FindUserByEmail(user.Email)
+	if userEmail.Id != 0 {
+		resp := responseDto.NewResponse(
+			errorcodes.MAIL_TAKEN,
+			"El email ya ha sido tomado",
+			nil,
+		)
+		return resp, http.StatusBadRequest
+	}
+
+	//Hashing ths password
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		response := responseDto.NewResponse(
+			errorcodes.HASH_PASS_ERROR,
+			"Error hashing the password",
+			nil,
+		)
+		return response, http.StatusInternalServerError
+	}
+
+	userM := models.User{Role: roles.USER}
 	mapper.AutoMapper(&user, &userM)
 
-	//TODO hacer todo el tema de los JWT
-	//TODO Tirar un error si ya existe o si surgio un error Seguir por aca
+	userM.Password = string(hashedPass)
 	savedUser := auth.storage.Save(userM)
+
+	t, err := utils.GenerateToken(savedUser)
+	if err != nil {
+		response := responseDto.NewResponse(errorcodes.JWT_ERROR, "trouble creating a JWT", nil)
+		return response, http.StatusInternalServerError
+	}
 
 	userDto := responseDto.UserDto{}
 	mapper.AutoMapper(&savedUser, &userDto)
+	userToken := responseDto.UserTokenDto{User: userDto, Token: t}
 
-	resp := responseDto.NewResponse("OK", "Usuario creado", userDto)
-	return resp
+	resp := responseDto.NewResponse("OK", "Usuario creado", userToken)
+	return resp, http.StatusOK
 }

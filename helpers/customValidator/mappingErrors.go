@@ -11,7 +11,7 @@ func MapValidationErrors(err error) map[string]string {
 
 	for _, err := range err.(validator.ValidationErrors) {
 		key := strings.ToLower(err.Field())
-		ret[key] = err.Tag()
+		ret[key] = "Type error: " + err.Tag()
 	}
 
 	return ret

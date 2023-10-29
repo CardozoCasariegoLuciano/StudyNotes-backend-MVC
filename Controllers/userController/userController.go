@@ -21,7 +21,15 @@ func Init(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// ListAllUsers godoc
+// @Summary List all users
+// @Description List all users
+// @Tags User
+// @Accept json
+// @Produce json
+// @Success 200 {object} responseDto.ResponseDto{data=[]responseDto.UserDto}
+// @Router /user/all [get]
 func (controller *userController) All(c echo.Context) error {
-	ret := controller.service.ListAll()
-	return c.JSON(http.StatusOK, ret)
+	ret, code := controller.service.ListAll()
+	return c.JSON(code, ret)
 }
