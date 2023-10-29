@@ -1,6 +1,7 @@
 package main
 
 import (
+	customvalidator "CardozoCasariegoLuciano/StudyNotes/helpers/customValidator"
 	"CardozoCasariegoLuciano/StudyNotes/routes"
 	"fmt"
 
@@ -13,6 +14,7 @@ func main() {
 	//TODO preparar CORS
 	port := ":5050"
 	e := echo.New()
+	e.Validator = customvalidator.NewCustomValidator()
 
 	//Routes
 	routes.HanddlerRoutes(e)

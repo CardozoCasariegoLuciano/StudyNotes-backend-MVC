@@ -7,42 +7,35 @@ import (
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
 	"fmt"
 	"sync"
+
+	"github.com/devfeel/mapper"
 )
 
 var authS *authService
 var once sync.Once
 
 type authService struct {
-	storage repository.IMemory
+	storage repository.IStorage
 }
 
 func NewAuthService() *authService {
 	once.Do(func() {
-		fmt.Println("Pasa por aca authService")
+		fmt.Println("Pasa por aca authService dentro del once")
 		authS = &authService{storage: repository.NewMemory()}
 	})
 	return authS
 }
 
 func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) responseDto.ResponseDto {
-	userM := models.User{
-		Name:     user.Name,
-		Role:     "USER",
-		Email:    user.Email,
-		Image:    "",
-		Password: user.Password,
-	}
+	userM := models.User{Role: "User"}
+	mapper.AutoMapper(&user, &userM)
 
-	//TODO Tirar un error si ya existe o si surgio un error
+	//TODO hacer todo el tema de los JWT
+	//TODO Tirar un error si ya existe o si surgio un error Seguir por aca
 	savedUser := auth.storage.Save(userM)
 
-	userDto := responseDto.UserDto{
-		Id:    savedUser.Id,
-		Name:  savedUser.Name,
-		Email: savedUser.Email,
-		Image: savedUser.Image,
-		Role:  savedUser.Role,
-	}
+	userDto := responseDto.UserDto{}
+	mapper.AutoMapper(&savedUser, &userDto)
 
 	resp := responseDto.NewResponse("OK", "Usuario creado", userDto)
 	return resp
