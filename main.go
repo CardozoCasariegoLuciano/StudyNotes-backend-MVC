@@ -17,7 +17,7 @@ import (
 // @version		1.0
 // @BasePath	/api/v1
 func main() {
-	//TODO prepara el repo con los Actions y todo eso
+	//TODO prepara el repo con los Actions y todo eso al final esto
 	//TODO meter mysql primero esto
 
 	//Get config
