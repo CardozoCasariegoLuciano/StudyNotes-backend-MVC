@@ -18,7 +18,7 @@ import (
 // @BasePath	/api/v1
 func main() {
 	//TODO prepara el repo con los Actions y todo eso
-	//TODO meter mysql
+	//TODO meter mysql primero esto
 
 	//Get config
 	config := configuration.GetConfig()
