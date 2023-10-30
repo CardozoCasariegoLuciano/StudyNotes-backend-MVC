@@ -50,8 +50,6 @@ func (controller authController) Register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	//TODO Hacer los tests
-
 	ret, code := controller.service.RegisterUser(data)
 	return c.JSON(code, ret)
 }
