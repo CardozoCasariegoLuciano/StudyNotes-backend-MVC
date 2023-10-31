@@ -15,4 +15,5 @@ const (
 	DATA_NO_MATCH             = "ER012"
 	HASH_PASS_ERROR           = "ER013"
 	MAIL_TAKEN                = "ER014"
+	FAIL_SAVING               = "ER015"
 )

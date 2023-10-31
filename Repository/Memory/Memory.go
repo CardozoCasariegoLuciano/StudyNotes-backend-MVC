@@ -1,4 +1,4 @@
-package repository
+package memory
 
 import (
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
@@ -6,29 +6,29 @@ import (
 	"sync"
 )
 
-var db *memory
-var once sync.Once
+var DB_Memory *memory
+var once_memory sync.Once
 
 type memory struct {
 	users []models.User
 }
 
 func NewMemory() *memory {
-	once.Do(func() {
+	once_memory.Do(func() {
 		fmt.Println("Pasa por aca memory")
-		db = &memory{users: []models.User{}}
+		DB_Memory = &memory{users: []models.User{}}
 	})
-	return db
+	return DB_Memory
 }
 
-func (memory *memory) Save(user models.User) models.User {
-	user.Id = len(memory.users) + 1
-	memory.users = append(memory.users, user)
-	return user
+func (memory *memory) SaveUser(user *models.User) error {
+	user.CommonModelFields.ID = uint(len(memory.users) + 1)
+	memory.users = append(memory.users, *user)
+	return nil
 }
 
-func (memory *memory) ListAll() []models.User {
-	return memory.users
+func (memory *memory) ListAllUsers(list *[]models.User) {
+	*list = memory.users
 }
 
 func (memory *memory) FindUserByEmail(email string) models.User {
@@ -39,6 +39,5 @@ func (memory *memory) FindUserByEmail(email string) models.User {
 			break
 		}
 	}
-
 	return userFinded
 }

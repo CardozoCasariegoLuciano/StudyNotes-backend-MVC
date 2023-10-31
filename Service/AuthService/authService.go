@@ -5,6 +5,7 @@ import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
+	mysql "CardozoCasariegoLuciano/StudyNotes/Repository/MySql"
 	errorcodes "CardozoCasariegoLuciano/StudyNotes/helpers/errorCodes"
 	"CardozoCasariegoLuciano/StudyNotes/helpers/roles"
 	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
@@ -26,7 +27,7 @@ type authService struct {
 func NewAuthService() *authService {
 	once.Do(func() {
 		fmt.Println("Pasa por aca authService dentro del once")
-		authS = &authService{storage: repository.NewMemory()}
+		authS = &authService{storage: mysql.NewDataBase()}
 	})
 	return authS
 }
@@ -34,7 +35,7 @@ func NewAuthService() *authService {
 func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (responseDto.ResponseDto, int) {
 	//Validate email
 	userEmail := auth.storage.FindUserByEmail(user.Email)
-	if userEmail.Id != 0 {
+	if userEmail.ID != 0 {
 		resp := responseDto.NewResponse(
 			errorcodes.MAIL_TAKEN,
 			"El email ya ha sido tomado",
@@ -57,17 +58,23 @@ func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (response
 	userM := models.User{Role: roles.USER}
 	mapper.AutoMapper(&user, &userM)
 
+	//Save user
 	userM.Password = string(hashedPass)
-	savedUser := auth.storage.Save(userM)
+	err = auth.storage.SaveUser(&userM)
+	if err != nil {
+		response := responseDto.NewResponse(errorcodes.FAIL_SAVING, "trouble saving the user", nil)
+		return response, http.StatusInternalServerError
+	}
 
-	t, err := utils.GenerateToken(savedUser)
+	//Generate Token
+	t, err := utils.GenerateToken(userM)
 	if err != nil {
 		response := responseDto.NewResponse(errorcodes.JWT_ERROR, "trouble creating a JWT", nil)
 		return response, http.StatusInternalServerError
 	}
 
-	userDto := responseDto.UserDto{}
-	mapper.AutoMapper(&savedUser, &userDto)
+	userDto := responseDto.UserDto{ID: int(userM.CommonModelFields.ID)}
+	mapper.AutoMapper(&userM, &userDto)
 	userToken := responseDto.UserTokenDto{User: userDto, Token: t}
 
 	resp := responseDto.NewResponse("OK", "Usuario creado", userToken)
