@@ -10,7 +10,7 @@ import (
 
 func GenerateToken(user models.User) (string, error) {
 	claims := responseDto.JwtDto{
-		Id:    user.Id,
+		Id:    user.ID,
 		Email: user.Email,
 		Role:  user.Role,
 	}
