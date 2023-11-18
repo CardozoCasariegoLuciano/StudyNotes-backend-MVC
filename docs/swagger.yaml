@@ -97,11 +97,20 @@ paths:
       summary: Login user
       tags:
       - Auth
+  /auth/logout:
+    post:
+      description: Remove cookie
+      responses:
+        "200":
+          description: OK
+      summary: Logout user
+      tags:
+      - Auth
   /auth/register:
     post:
       consumes:
       - application/json
-      description: Charge new user into the database
+      description: Charge new user into the database and set a cookie with de JWT
       parameters:
       - description: request body
         in: body

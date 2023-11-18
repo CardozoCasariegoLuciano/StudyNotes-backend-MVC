@@ -172,12 +172,8 @@ func (controller *AuthController) Login(c echo.Context) error {
 // @Summary Logout user
 // @Description Remove cookie
 // @Tags Auth
-// @Accept json
-// @Param Login body requestDto.LoginUserDto true "request body"
-// @Produce json
-// @Success 200 {object} responseDto.ResponseDto{data=swaggertypes.SwaggerCustomTypes{user=responseDto.UserDto}}
-// @Failure 400 {object} responseDto.ResponseDto{data=object}
-// @Router /auth/login [post]
+// @Success 200
+// @Router /auth/logout [post]
 func (controller *AuthController) Logout(c echo.Context) error {
 	_, err := c.Cookie(utils.CookieName)
 	if err != nil {
