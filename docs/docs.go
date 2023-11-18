@@ -91,9 +91,23 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/logout": {
+            "post": {
+                "description": "Remove cookie",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
-                "description": "Charge new user into the database",
+                "description": "Charge new user into the database and set a cookie with de JWT",
                 "consumes": [
                     "application/json"
                 ],
