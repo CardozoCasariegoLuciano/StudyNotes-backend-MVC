@@ -27,8 +27,9 @@ func (memory *memory) SaveUser(user *models.User) error {
 	return nil
 }
 
-func (memory *memory) ListAllUsers(list *[]models.User) {
+func (memory *memory) ListAllUsers(list *[]models.User) error {
 	*list = memory.users
+	return nil
 }
 
 func (memory *memory) FindUserByEmail(email string) models.User {

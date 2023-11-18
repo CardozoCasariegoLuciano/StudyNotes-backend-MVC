@@ -17,9 +17,6 @@ import (
 // @version		1.0
 // @BasePath	/api/v1
 func main() {
-	//TODO prepara el repo con los Actions y todo eso al final esto
-	//TODO Hacer los tests
-
 	//Get config
 	config := configuration.GetConfig()
 	port := config.App.Port
@@ -29,7 +26,11 @@ func main() {
 	e.Validator = customvalidator.NewCustomValidator()
 
 	//CORS
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{}))
+	e.Use(middleware.CORSWithConfig(
+		middleware.CORSConfig{
+			AllowCredentials: true,
+		},
+	))
 
 	//Middleware
 	e.Use(middleware.Recover())

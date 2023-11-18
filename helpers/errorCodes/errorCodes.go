@@ -16,4 +16,6 @@ const (
 	HASH_PASS_ERROR           = "ER013"
 	MAIL_TAKEN                = "ER014"
 	FAIL_SAVING               = "ER015"
+	INTERNAL_ERROR            = "ER016"
+	OK                        = "OK"
 )

@@ -6,5 +6,6 @@ import (
 )
 
 type IAuthService interface {
-	RegisterUser(user requestDto.RegisterUserDto) (responseDto.ResponseDto, int)
+	RegisterUser(user requestDto.RegisterUserDto) (*responseDto.UserDto, error)
+	LoginUser(user requestDto.LoginUserDto) (*responseDto.UserDto, error)
 }

@@ -4,9 +4,8 @@ import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
-	mysql "CardozoCasariegoLuciano/StudyNotes/Repository/MySql"
+	errortypes "CardozoCasariegoLuciano/StudyNotes/helpers/errorTypes"
 	"fmt"
-	"net/http"
 	"sync"
 
 	"github.com/devfeel/mapper"
@@ -19,25 +18,27 @@ type userService struct {
 	storage repository.IStorage
 }
 
-func NewUserService() *userService {
+func NewUserService(storage repository.IStorage) *userService {
 	once.Do(func() {
 		fmt.Println("Pasa por aca userService")
-		userS = &userService{storage: mysql.NewDataBase()}
+		userS = &userService{storage: storage}
 	})
 	return userS
 }
 
-func (userS *userService) ListAll() (responseDto.ResponseDto, int) {
+func (userS *userService) ListAll() ([]responseDto.UserDto, error) {
 	allUsersDto := []responseDto.UserDto{}
 	allUsersModels := []models.User{}
-	userS.storage.ListAllUsers(&allUsersModels)
+	err := userS.storage.ListAllUsers(&allUsersModels)
+	if err != nil {
+		return nil, errortypes.InternalError
+	}
 
 	for _, elem := range allUsersModels {
-		userDto := responseDto.UserDto{ID: int(elem.CommonModelFields.ID)}
+		userDto := responseDto.UserDto{ID: elem.CommonModelFields.ID}
 		mapper.AutoMapper(&elem, &userDto)
 		allUsersDto = append(allUsersDto, userDto)
 	}
 
-	resp := responseDto.NewResponse("OK", "Lista de usuarios", allUsersDto)
-	return resp, http.StatusOK
+	return allUsersDto, nil
 }
