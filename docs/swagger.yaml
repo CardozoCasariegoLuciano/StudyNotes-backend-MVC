@@ -1,5 +1,15 @@
 basePath: /api/v1
 definitions:
+  requestDto.LoginUserDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   requestDto.RegisterUserDto:
     properties:
       confirmation:
@@ -46,6 +56,47 @@ info:
   title: StudyNotes API docTemplate
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user and set the cookie
+      parameters:
+      - description: request body
+        in: body
+        name: Login
+        required: true
+        schema:
+          $ref: '#/definitions/requestDto.LoginUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/swaggertypes.SwaggerCustomTypes'
+                  - properties:
+                      user:
+                        $ref: '#/definitions/responseDto.UserDto'
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Login user
+      tags:
+      - Auth
   /auth/register:
     post:
       consumes:
@@ -71,8 +122,6 @@ paths:
                   allOf:
                   - $ref: '#/definitions/swaggertypes.SwaggerCustomTypes'
                   - properties:
-                      token:
-                        type: string
                       user:
                         $ref: '#/definitions/responseDto.UserDto'
                     type: object

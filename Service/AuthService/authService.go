@@ -5,54 +5,45 @@ import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
-	mysql "CardozoCasariegoLuciano/StudyNotes/Repository/MySql"
-	errorcodes "CardozoCasariegoLuciano/StudyNotes/helpers/errorCodes"
+	errortypes "CardozoCasariegoLuciano/StudyNotes/helpers/errorTypes"
 	"CardozoCasariegoLuciano/StudyNotes/helpers/roles"
 	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
 	"fmt"
-	"net/http"
 	"sync"
 
 	"github.com/devfeel/mapper"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var authS *authService
 var once sync.Once
 
 type authService struct {
-	storage repository.IStorage
+	storage    repository.IStorage
+	encripting utils.Ibcrypt
 }
 
-func NewAuthService() *authService {
+func NewAuthService(storage repository.IStorage, cripto utils.Ibcrypt) *authService {
 	once.Do(func() {
 		fmt.Println("Pasa por aca authService dentro del once")
-		authS = &authService{storage: mysql.NewDataBase()}
+		authS = &authService{
+			storage:    storage,
+			encripting: cripto,
+		}
 	})
 	return authS
 }
 
-func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (responseDto.ResponseDto, int) {
+func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (*responseDto.UserDto, error) {
 	//Validate email
 	userEmail := auth.storage.FindUserByEmail(user.Email)
 	if userEmail.ID != 0 {
-		resp := responseDto.NewResponse(
-			errorcodes.MAIL_TAKEN,
-			"El email ya ha sido tomado",
-			nil,
-		)
-		return resp, http.StatusBadRequest
+		return nil, errortypes.MailAlreadyTaken
 	}
 
 	//Hashing ths password
-	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPass, err := auth.encripting.HashPassword(user.Password)
 	if err != nil {
-		response := responseDto.NewResponse(
-			errorcodes.HASH_PASS_ERROR,
-			"Error hashing the password",
-			nil,
-		)
-		return response, http.StatusInternalServerError
+		return nil, errortypes.InternalError
 	}
 
 	userM := models.User{Role: roles.USER}
@@ -62,21 +53,28 @@ func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (response
 	userM.Password = string(hashedPass)
 	err = auth.storage.SaveUser(&userM)
 	if err != nil {
-		response := responseDto.NewResponse(errorcodes.FAIL_SAVING, "trouble saving the user", nil)
-		return response, http.StatusInternalServerError
+		return nil, errortypes.InternalError
 	}
 
-	//Generate Token
-	t, err := utils.GenerateToken(userM)
-	if err != nil {
-		response := responseDto.NewResponse(errorcodes.JWT_ERROR, "trouble creating a JWT", nil)
-		return response, http.StatusInternalServerError
-	}
-
-	userDto := responseDto.UserDto{ID: int(userM.CommonModelFields.ID)}
+	userDto := responseDto.UserDto{ID: userM.CommonModelFields.ID}
 	mapper.AutoMapper(&userM, &userDto)
-	userToken := responseDto.UserTokenDto{User: userDto, Token: t}
 
-	resp := responseDto.NewResponse("OK", "Usuario creado", userToken)
-	return resp, http.StatusOK
+	return &userDto, nil
+}
+
+func (auth *authService) LoginUser(user requestDto.LoginUserDto) (*responseDto.UserDto, error) {
+	userLoged := auth.storage.FindUserByEmail(user.Email)
+	if userLoged.ID == 0 {
+		return nil, errortypes.WrongPassOrEmail
+	}
+
+	//Compare the passwords
+	err := auth.encripting.Compare(userLoged.Password, user.Password)
+	if err != nil {
+		return nil, errortypes.WrongPassOrEmail
+	}
+
+	userDto := responseDto.UserDto{ID: userLoged.CommonModelFields.ID}
+	mapper.AutoMapper(&userLoged, &userDto)
+	return &userDto, nil
 }

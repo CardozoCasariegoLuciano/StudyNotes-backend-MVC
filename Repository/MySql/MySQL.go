@@ -32,8 +32,9 @@ func (st *database) SaveUser(user *models.User) error {
 	return nil
 }
 
-func (st *database) ListAllUsers(list *[]models.User) {
-	st.db.Find(list)
+func (st *database) ListAllUsers(list *[]models.User) error {
+	gormResp := st.db.Find(list)
+	return gormResp.Error
 }
 
 func (st *database) FindUserByEmail(email string) models.User {
