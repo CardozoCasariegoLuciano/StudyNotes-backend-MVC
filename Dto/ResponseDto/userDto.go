@@ -1,7 +1,7 @@
 package responseDto
 
 type UserDto struct {
-	Id    int    `json:"id" mapper:"_id"`
+	ID    uint   `json:"id" mapper:"_id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Image string `json:"image"`

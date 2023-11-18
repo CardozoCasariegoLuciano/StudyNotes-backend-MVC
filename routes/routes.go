@@ -1,13 +1,20 @@
 package routes
 
-import "github.com/labstack/echo/v4"
+import (
+	mysql "CardozoCasariegoLuciano/StudyNotes/Repository/MySql"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
+
+	"github.com/labstack/echo/v4"
+)
 
 func HanddlerRoutes(e *echo.Echo) {
-	basePath := "/api/v1"
+	storage := mysql.NewDataBase()
+	encripting := utils.Bcypt{}
+	token := utils.Token{}
 
-	authRoutes := e.Group(basePath + "/auth")
-	AuthRoutes(authRoutes)
+	authRoutes := e.Group(utils.BasePath + "/auth")
+	AuthRoutes(authRoutes, storage, &encripting, &token)
 
-	userRoutes := e.Group(basePath + "/user")
+	userRoutes := e.Group(utils.BasePath + "/user")
 	UserRoutes(userRoutes)
 }

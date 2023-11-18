@@ -2,7 +2,9 @@ package userservice
 
 import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
+	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
+	errortypes "CardozoCasariegoLuciano/StudyNotes/helpers/errorTypes"
 	"fmt"
 	"sync"
 
@@ -16,24 +18,27 @@ type userService struct {
 	storage repository.IStorage
 }
 
-func NewUserService() *userService {
+func NewUserService(storage repository.IStorage) *userService {
 	once.Do(func() {
 		fmt.Println("Pasa por aca userService")
-		userS = &userService{storage: repository.NewMemory()}
+		userS = &userService{storage: storage}
 	})
 	return userS
 }
 
-func (userS *userService) ListAll() responseDto.ResponseDto {
-	allusers := userS.storage.ListAll()
+func (userS *userService) ListAll() ([]responseDto.UserDto, error) {
 	allUsersDto := []responseDto.UserDto{}
+	allUsersModels := []models.User{}
+	err := userS.storage.ListAllUsers(&allUsersModels)
+	if err != nil {
+		return nil, errortypes.InternalError
+	}
 
-	for _, elem := range allusers {
-		userDto := responseDto.UserDto{}
+	for _, elem := range allUsersModels {
+		userDto := responseDto.UserDto{ID: elem.CommonModelFields.ID}
 		mapper.AutoMapper(&elem, &userDto)
 		allUsersDto = append(allUsersDto, userDto)
 	}
 
-	resp := responseDto.NewResponse("OK", "Lista de usuarios", allUsersDto)
-	return resp
+	return allUsersDto, nil
 }

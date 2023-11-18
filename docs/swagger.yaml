@@ -1,0 +1,172 @@
+basePath: /api/v1
+definitions:
+  requestDto.LoginUserDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  requestDto.RegisterUserDto:
+    properties:
+      confirmation:
+        type: string
+      email:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      password:
+        minLength: 3
+        type: string
+    required:
+    - confirmation
+    - email
+    - name
+    - password
+    type: object
+  responseDto.ResponseDto:
+    properties:
+      data: {}
+      message:
+        type: string
+      messageType:
+        type: string
+    type: object
+  responseDto.UserDto:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+  swaggertypes.SwaggerCustomTypes:
+    type: object
+info:
+  contact: {}
+  title: StudyNotes API docTemplate
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user and set the cookie
+      parameters:
+      - description: request body
+        in: body
+        name: Login
+        required: true
+        schema:
+          $ref: '#/definitions/requestDto.LoginUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/swaggertypes.SwaggerCustomTypes'
+                  - properties:
+                      user:
+                        $ref: '#/definitions/responseDto.UserDto'
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Login user
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      description: Remove cookie
+      responses:
+        "200":
+          description: OK
+      summary: Logout user
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Charge new user into the database and set a cookie with de JWT
+      parameters:
+      - description: request body
+        in: body
+        name: Register
+        required: true
+        schema:
+          $ref: '#/definitions/requestDto.RegisterUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/swaggertypes.SwaggerCustomTypes'
+                  - properties:
+                      user:
+                        $ref: '#/definitions/responseDto.UserDto'
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Register new user
+      tags:
+      - Auth
+  /user/all:
+    get:
+      consumes:
+      - application/json
+      description: List all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/responseDto.UserDto'
+                  type: array
+              type: object
+      summary: List all users
+      tags:
+      - User
+swagger: "2.0"

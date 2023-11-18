@@ -2,14 +2,18 @@ package routes
 
 import (
 	authcontroller "CardozoCasariegoLuciano/StudyNotes/Controllers/authController"
-	usercontroller "CardozoCasariegoLuciano/StudyNotes/Controllers/userController"
+	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
+	authservice "CardozoCasariegoLuciano/StudyNotes/Service/AuthService"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
 
 	"github.com/labstack/echo/v4"
 )
 
-func AuthRoutes(group *echo.Group) {
-	authController := authcontroller.NewAuthController()
+func AuthRoutes(group *echo.Group, storage repository.IStorage, encripting utils.Ibcrypt, token utils.Itokens) {
+	authservice := authservice.NewAuthService(storage, encripting)
+	authController := authcontroller.NewAuthController(authservice, token)
 
 	group.POST("/register", authController.Register)
-	group.POST("/login", usercontroller.Init)
+	group.POST("/login", authController.Login)
+	group.POST("/logout", authController.Logout)
 }

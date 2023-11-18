@@ -5,6 +5,9 @@ import (
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
+	errortypes "CardozoCasariegoLuciano/StudyNotes/helpers/errorTypes"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/roles"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
 	"fmt"
 	"sync"
 
@@ -15,28 +18,63 @@ var authS *authService
 var once sync.Once
 
 type authService struct {
-	storage repository.IStorage
+	storage    repository.IStorage
+	encripting utils.Ibcrypt
 }
 
-func NewAuthService() *authService {
+func NewAuthService(storage repository.IStorage, cripto utils.Ibcrypt) *authService {
 	once.Do(func() {
 		fmt.Println("Pasa por aca authService dentro del once")
-		authS = &authService{storage: repository.NewMemory()}
+		authS = &authService{
+			storage:    storage,
+			encripting: cripto,
+		}
 	})
 	return authS
 }
 
-func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) responseDto.ResponseDto {
-	userM := models.User{Role: "User"}
+func (auth *authService) RegisterUser(user requestDto.RegisterUserDto) (*responseDto.UserDto, error) {
+	//Validate email
+	userEmail := auth.storage.FindUserByEmail(user.Email)
+	if userEmail.ID != 0 {
+		return nil, errortypes.MailAlreadyTaken
+	}
+
+	//Hashing ths password
+	hashedPass, err := auth.encripting.HashPassword(user.Password)
+	if err != nil {
+		return nil, errortypes.InternalError
+	}
+
+	userM := models.User{Role: roles.USER}
 	mapper.AutoMapper(&user, &userM)
 
-	//TODO hacer todo el tema de los JWT
-	//TODO Tirar un error si ya existe o si surgio un error Seguir por aca
-	savedUser := auth.storage.Save(userM)
+	//Save user
+	userM.Password = string(hashedPass)
+	err = auth.storage.SaveUser(&userM)
+	if err != nil {
+		return nil, errortypes.InternalError
+	}
 
-	userDto := responseDto.UserDto{}
-	mapper.AutoMapper(&savedUser, &userDto)
+	userDto := responseDto.UserDto{ID: userM.CommonModelFields.ID}
+	mapper.AutoMapper(&userM, &userDto)
 
-	resp := responseDto.NewResponse("OK", "Usuario creado", userDto)
-	return resp
+	return &userDto, nil
+}
+
+func (auth *authService) LoginUser(user requestDto.LoginUserDto) (*responseDto.UserDto, error) {
+	userLoged := auth.storage.FindUserByEmail(user.Email)
+	if userLoged.ID == 0 {
+		return nil, errortypes.WrongPassOrEmail
+	}
+
+	//Compare the passwords
+	err := auth.encripting.Compare(userLoged.Password, user.Password)
+	if err != nil {
+		return nil, errortypes.WrongPassOrEmail
+	}
+
+	userDto := responseDto.UserDto{ID: userLoged.CommonModelFields.ID}
+	mapper.AutoMapper(&userLoged, &userDto)
+	return &userDto, nil
 }
