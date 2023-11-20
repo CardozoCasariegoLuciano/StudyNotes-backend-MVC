@@ -9,6 +9,7 @@ import (
 
 type Imiddlewares interface {
 	ValidateToken(next echo.HandlerFunc) echo.HandlerFunc
+	ValidateTokenAnd_ADMIN(next echo.HandlerFunc) echo.HandlerFunc
 }
 
 type Middlewares struct {
