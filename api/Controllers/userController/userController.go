@@ -9,12 +9,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type userController struct {
+type UserController struct {
 	service userservice.IUserService
 }
 
-func NewUserController(service userservice.IUserService) *userController {
-	return &userController{service: service}
+func NewUserController(service userservice.IUserService) *UserController {
+	return &UserController{service: service}
 }
 
 // ListAllUsers godoc
@@ -25,7 +25,7 @@ func NewUserController(service userservice.IUserService) *userController {
 // @Produce json
 // @Success 200 {object} responseDto.ResponseDto{data=[]responseDto.UserDto}
 // @Router /user/all [get]
-func (controller *userController) All(c echo.Context) error {
+func (controller *UserController) All(c echo.Context) error {
 	list, err := controller.service.ListAll()
 	if err != nil {
 		response := responseDto.NewResponse(

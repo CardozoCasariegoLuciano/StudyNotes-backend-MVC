@@ -73,6 +73,60 @@ func (_c *MockItokens_GenerateToken_Call) RunAndReturn(run func(responseDto.User
 	return _c
 }
 
+// ParseToken provides a mock function with given fields: token
+func (_m *MockItokens) ParseToken(token string) (*responseDto.JwtDto, error) {
+	ret := _m.Called(token)
+
+	var r0 *responseDto.JwtDto
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*responseDto.JwtDto, error)); ok {
+		return rf(token)
+	}
+	if rf, ok := ret.Get(0).(func(string) *responseDto.JwtDto); ok {
+		r0 = rf(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*responseDto.JwtDto)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockItokens_ParseToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ParseToken'
+type MockItokens_ParseToken_Call struct {
+	*mock.Call
+}
+
+// ParseToken is a helper method to define mock.On call
+//   - token string
+func (_e *MockItokens_Expecter) ParseToken(token interface{}) *MockItokens_ParseToken_Call {
+	return &MockItokens_ParseToken_Call{Call: _e.mock.On("ParseToken", token)}
+}
+
+func (_c *MockItokens_ParseToken_Call) Run(run func(token string)) *MockItokens_ParseToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *MockItokens_ParseToken_Call) Return(_a0 *responseDto.JwtDto, _a1 error) *MockItokens_ParseToken_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockItokens_ParseToken_Call) RunAndReturn(run func(string) (*responseDto.JwtDto, error)) *MockItokens_ParseToken_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockItokens creates a new instance of MockItokens. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockItokens(t interface {

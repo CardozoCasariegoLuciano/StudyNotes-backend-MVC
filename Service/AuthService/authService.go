@@ -8,7 +8,6 @@ import (
 	errortypes "CardozoCasariegoLuciano/StudyNotes/helpers/errorTypes"
 	"CardozoCasariegoLuciano/StudyNotes/helpers/roles"
 	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
-	"fmt"
 	"sync"
 
 	"github.com/devfeel/mapper"
@@ -22,9 +21,11 @@ type authService struct {
 	encripting utils.Ibcrypt
 }
 
-func NewAuthService(storage repository.IStorage, cripto utils.Ibcrypt) *authService {
+func NewAuthService(
+	storage repository.IStorage,
+	cripto utils.Ibcrypt,
+) IAuthService {
 	once.Do(func() {
-		fmt.Println("Pasa por aca authService dentro del once")
 		authS = &authService{
 			storage:    storage,
 			encripting: cripto,

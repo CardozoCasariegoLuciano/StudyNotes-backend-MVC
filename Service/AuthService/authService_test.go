@@ -19,7 +19,7 @@ import (
 
 var repo repository.MockIStorage
 var cripto utils.MockIbcrypt
-var authServ *authService
+var authServ IAuthService
 
 func TestMain(m *testing.M) {
 	repo = repository.MockIStorage{}

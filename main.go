@@ -1,50 +1,64 @@
 package main
 
 import (
-	"CardozoCasariegoLuciano/StudyNotes/configuration"
-	customvalidator "CardozoCasariegoLuciano/StudyNotes/helpers/customValidator"
-	"CardozoCasariegoLuciano/StudyNotes/routes"
-	"fmt"
+	mysql "CardozoCasariegoLuciano/StudyNotes/Repository/MySql"
+	authservice "CardozoCasariegoLuciano/StudyNotes/Service/AuthService"
+	userservice "CardozoCasariegoLuciano/StudyNotes/Service/UserService"
+	"CardozoCasariegoLuciano/StudyNotes/api"
+	authcontroller "CardozoCasariegoLuciano/StudyNotes/api/Controllers/authController"
+	usercontroller "CardozoCasariegoLuciano/StudyNotes/api/Controllers/userController"
+	middlewares "CardozoCasariegoLuciano/StudyNotes/api/Middlewares"
+	router "CardozoCasariegoLuciano/StudyNotes/api/Router"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
+	"context"
 
 	_ "CardozoCasariegoLuciano/StudyNotes/docs"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	echoSwagger "github.com/swaggo/echo-swagger"
+	"go.uber.org/fx"
 )
 
 // @title			StudyNotes API docTemplate
 // @version		1.0
 // @BasePath	/api/v1
 func main() {
-	//Get config
-	config := configuration.GetConfig()
-	port := config.App.Port
+	app := fx.New(
+		fx.Provide(
+			//Independents
+			utils.NewBcrypy,
+			utils.NewToken,
+			mysql.NewDataBase,
 
-	//Init echo
-	e := echo.New()
-	e.Validator = customvalidator.NewCustomValidator()
+			//Services
+			userservice.NewUserService,
+			authservice.NewAuthService,
 
-	//CORS
-	e.Use(middleware.CORSWithConfig(
-		middleware.CORSConfig{
-			AllowCredentials: true,
+			//Controllers
+			authcontroller.NewAuthController,
+			usercontroller.NewUserController,
+			middlewares.NewMidldeware,
+
+			//Router
+			router.NewRouter,
+
+			//API
+			api.NewApi,
+		),
+		fx.Invoke(
+			setLifeCycle,
+		),
+	)
+
+	app.Run()
+}
+
+func setLifeCycle(lc fx.Lifecycle, api *api.Api) {
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			go api.Start()
+			return nil
 		},
-	))
-
-	//Middleware
-	e.Use(middleware.Recover())
-	if config.App.Logger {
-		e.Use(middleware.Logger())
-	}
-
-	//Swager
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
-
-	//Routes
-	routes.HanddlerRoutes(e)
-
-	//Starting App
-	fmt.Printf("Server runnin on port http://localhost%s", port)
-	e.Logger.Fatal(e.Start(port))
+		OnStop: func(ctx context.Context) error {
+			return nil
+		},
+	})
 }

@@ -2,7 +2,7 @@ package mysql
 
 import (
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
-	"fmt"
+	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
 	"sync"
 
 	"gorm.io/gorm"
@@ -15,9 +15,8 @@ type database struct {
 	db *gorm.DB
 }
 
-func NewDataBase() *database {
+func NewDataBase() repository.IStorage {
 	once_mySQL.Do(func() {
-		fmt.Println("Pasa por aca MySQL")
 		db_MySQL = &database{db: getDataBase()}
 	})
 	return db_MySQL
