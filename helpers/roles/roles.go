@@ -1,7 +1,7 @@
 package roles
 
 const (
-	USER        = "User"
-	ADMIN       = "Admin"
-	SUPER_ADMIN = "Super_admin"
+	USER        = "USER"
+	ADMIN       = "ADMIN"
+	SUPER_ADMIN = "SUPER_ADMIN"
 )

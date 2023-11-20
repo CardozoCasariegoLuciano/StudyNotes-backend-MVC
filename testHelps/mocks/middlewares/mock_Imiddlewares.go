@@ -65,6 +65,50 @@ func (_c *MockImiddlewares_ValidateToken_Call) RunAndReturn(run func(echo.Handle
 	return _c
 }
 
+// ValidateTokenAnd_ADMIN provides a mock function with given fields: next
+func (_m *MockImiddlewares) ValidateTokenAnd_ADMIN(next echo.HandlerFunc) echo.HandlerFunc {
+	ret := _m.Called(next)
+
+	var r0 echo.HandlerFunc
+	if rf, ok := ret.Get(0).(func(echo.HandlerFunc) echo.HandlerFunc); ok {
+		r0 = rf(next)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(echo.HandlerFunc)
+		}
+	}
+
+	return r0
+}
+
+// MockImiddlewares_ValidateTokenAnd_ADMIN_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ValidateTokenAnd_ADMIN'
+type MockImiddlewares_ValidateTokenAnd_ADMIN_Call struct {
+	*mock.Call
+}
+
+// ValidateTokenAnd_ADMIN is a helper method to define mock.On call
+//   - next echo.HandlerFunc
+func (_e *MockImiddlewares_Expecter) ValidateTokenAnd_ADMIN(next interface{}) *MockImiddlewares_ValidateTokenAnd_ADMIN_Call {
+	return &MockImiddlewares_ValidateTokenAnd_ADMIN_Call{Call: _e.mock.On("ValidateTokenAnd_ADMIN", next)}
+}
+
+func (_c *MockImiddlewares_ValidateTokenAnd_ADMIN_Call) Run(run func(next echo.HandlerFunc)) *MockImiddlewares_ValidateTokenAnd_ADMIN_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(echo.HandlerFunc))
+	})
+	return _c
+}
+
+func (_c *MockImiddlewares_ValidateTokenAnd_ADMIN_Call) Return(_a0 echo.HandlerFunc) *MockImiddlewares_ValidateTokenAnd_ADMIN_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockImiddlewares_ValidateTokenAnd_ADMIN_Call) RunAndReturn(run func(echo.HandlerFunc) echo.HandlerFunc) *MockImiddlewares_ValidateTokenAnd_ADMIN_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockImiddlewares creates a new instance of MockImiddlewares. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockImiddlewares(t interface {
