@@ -2,6 +2,7 @@ package testhelpers
 
 import (
 	customvalidator "CardozoCasariegoLuciano/StudyNotes/helpers/customValidator"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
 	"encoding/json"
 	"io"
 	"log"
@@ -16,6 +17,7 @@ type InitTestConfig struct {
 	Path    string
 	Method  string
 	ReqBody interface{}
+	Token   string
 }
 
 type TestData struct {
@@ -47,6 +49,15 @@ func SetGenericTestData(config *InitTestConfig) *TestData {
 
 	writer := httptest.NewRecorder()
 	context := e.NewContext(request, writer)
+
+	if len(config.Token) > 0 {
+		cookie := http.Cookie{
+			Name:  utils.CookieName,
+			Value: config.Token,
+			Path:  "/",
+		}
+		context.Request().AddCookie(&cookie)
+	}
 
 	returnValues := &TestData{
 		Echo:    e,

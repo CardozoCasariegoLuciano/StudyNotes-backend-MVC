@@ -5,7 +5,6 @@ import (
 	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	repository "CardozoCasariegoLuciano/StudyNotes/Repository"
 	errortypes "CardozoCasariegoLuciano/StudyNotes/helpers/errorTypes"
-	"fmt"
 	"sync"
 
 	"github.com/devfeel/mapper"
@@ -18,9 +17,8 @@ type userService struct {
 	storage repository.IStorage
 }
 
-func NewUserService(storage repository.IStorage) *userService {
+func NewUserService(storage repository.IStorage) IUserService {
 	once.Do(func() {
-		fmt.Println("Pasa por aca userService")
 		userS = &userService{storage: storage}
 	})
 	return userS

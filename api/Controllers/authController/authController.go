@@ -18,7 +18,10 @@ type AuthController struct {
 	token   utils.Itokens
 }
 
-func NewAuthController(service authservice.IAuthService, token utils.Itokens) *AuthController {
+func NewAuthController(
+	service authservice.IAuthService,
+	token utils.Itokens,
+) *AuthController {
 	return &AuthController{service: service, token: token}
 }
 
@@ -179,7 +182,6 @@ func (controller *AuthController) Logout(c echo.Context) error {
 	if err != nil {
 		return nil
 	}
-
 	c.SetCookie(utils.DeleteCookie())
 	return nil
 }
