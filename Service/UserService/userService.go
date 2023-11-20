@@ -40,3 +40,15 @@ func (userS *userService) ListAll() ([]responseDto.UserDto, error) {
 
 	return allUsersDto, nil
 }
+
+func (userS *userService) FindByID(id uint) (*responseDto.UserDto, error) {
+	user := userS.storage.GetUserByID(id)
+	if user.CommonModelFields.ID == 0 {
+		return nil, errortypes.UserNotFound
+	}
+
+	userDto := responseDto.UserDto{ID: user.CommonModelFields.ID}
+	mapper.AutoMapper(&user, &userDto)
+
+	return &userDto, nil
+}
