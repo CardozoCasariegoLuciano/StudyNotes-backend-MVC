@@ -169,4 +169,24 @@ paths:
       summary: List all users
       tags:
       - User
+  /user/me:
+    get:
+      consumes:
+      - application/json
+      description: Find user loged using the cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  $ref: '#/definitions/responseDto.UserDto'
+              type: object
+      summary: Find user loged
+      tags:
+      - User
 swagger: "2.0"

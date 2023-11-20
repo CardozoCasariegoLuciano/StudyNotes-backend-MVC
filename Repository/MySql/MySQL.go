@@ -41,3 +41,9 @@ func (st *database) FindUserByEmail(email string) models.User {
 	st.db.Where("email = ?", email).First(&user)
 	return user
 }
+
+func (st *database) GetUserByID(id uint) models.User {
+	user := models.User{}
+	st.db.Where("id = ?", id).First(&user)
+	return user
+}
