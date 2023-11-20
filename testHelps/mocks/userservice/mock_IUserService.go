@@ -21,6 +21,60 @@ func (_m *MockIUserService) EXPECT() *MockIUserService_Expecter {
 	return &MockIUserService_Expecter{mock: &_m.Mock}
 }
 
+// FindByID provides a mock function with given fields: id
+func (_m *MockIUserService) FindByID(id uint) (*responseDto.UserDto, error) {
+	ret := _m.Called(id)
+
+	var r0 *responseDto.UserDto
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint) (*responseDto.UserDto, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(uint) *responseDto.UserDto); ok {
+		r0 = rf(id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*responseDto.UserDto)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockIUserService_FindByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByID'
+type MockIUserService_FindByID_Call struct {
+	*mock.Call
+}
+
+// FindByID is a helper method to define mock.On call
+//   - id uint
+func (_e *MockIUserService_Expecter) FindByID(id interface{}) *MockIUserService_FindByID_Call {
+	return &MockIUserService_FindByID_Call{Call: _e.mock.On("FindByID", id)}
+}
+
+func (_c *MockIUserService_FindByID_Call) Run(run func(id uint)) *MockIUserService_FindByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(uint))
+	})
+	return _c
+}
+
+func (_c *MockIUserService_FindByID_Call) Return(_a0 *responseDto.UserDto, _a1 error) *MockIUserService_FindByID_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockIUserService_FindByID_Call) RunAndReturn(run func(uint) (*responseDto.UserDto, error)) *MockIUserService_FindByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListAll provides a mock function with given fields:
 func (_m *MockIUserService) ListAll() ([]responseDto.UserDto, error) {
 	ret := _m.Called()
