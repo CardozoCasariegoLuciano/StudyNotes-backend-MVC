@@ -52,3 +52,27 @@ func (userS *userService) FindByID(id uint) (*responseDto.UserDto, error) {
 
 	return &userDto, nil
 }
+
+func (us *userService) EditUser(id uint, name string, image string) (*responseDto.UserDto, error) {
+
+	userS.storage.EditUser(id, name, image)
+
+	userByID, err := us.findByIdAndReturn(id)
+	if err != nil {
+		return nil, err
+	}
+
+	userDto := responseDto.UserDto{ID: userByID.CommonModelFields.ID}
+	mapper.AutoMapper(userByID, &userDto)
+
+	return &userDto, nil
+}
+
+func (userS *userService) findByIdAndReturn(id uint) (*models.User, error) {
+	user := userS.storage.GetUserByID(id)
+	if user.CommonModelFields.ID == 0 {
+		return nil, errortypes.UserNotFound
+	}
+
+	return &user, nil
+}

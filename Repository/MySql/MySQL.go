@@ -47,3 +47,10 @@ func (st *database) GetUserByID(id uint) models.User {
 	st.db.Where("id = ?", id).First(&user)
 	return user
 }
+
+func (st *database) EditUser(id uint, name string, image string) {
+	user := models.User{}
+	st.db.Model(user).Where("id = ?", id).Updates(
+		map[string]interface{}{"name": name, "image": image},
+	)
+}

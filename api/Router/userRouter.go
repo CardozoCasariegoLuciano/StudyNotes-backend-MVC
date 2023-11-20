@@ -12,4 +12,5 @@ func (rt *Router) registerUserRoutes(e *echo.Echo) {
 	userRoutes.GET("/me", rt.userCtl.GetUserLoged, rt.midlewares.ValidateToken)
 	userRoutes.GET("/all", rt.userCtl.All, rt.midlewares.ValidateToken)
 	userRoutes.GET("/:userID", rt.userCtl.GetUserByID, rt.midlewares.ValidateTokenAnd_ADMIN)
+	userRoutes.PUT("/edit", rt.userCtl.EditUser, rt.midlewares.ValidateToken)
 }
