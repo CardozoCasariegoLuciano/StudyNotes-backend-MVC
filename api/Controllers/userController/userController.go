@@ -5,6 +5,7 @@ import (
 	userservice "CardozoCasariegoLuciano/StudyNotes/Service/UserService"
 	errorcodes "CardozoCasariegoLuciano/StudyNotes/helpers/errorCodes"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -63,12 +64,50 @@ func (controller *UserController) GetUserLoged(c echo.Context) error {
 			err.Error(),
 			nil,
 		)
-		return c.JSON(http.StatusInternalServerError, response)
+		return c.JSON(http.StatusNotFound, response)
 	}
 
 	response := responseDto.NewResponse(
 		errorcodes.OK,
 		"User loged",
+		user,
+	)
+	return c.JSON(http.StatusOK, response)
+}
+
+// Find user godoc
+// @Summary Find user by ID
+// @Description Find user by ID
+// @Tags User
+// @Accept json
+// @Param userID path string true "ID to find the user"
+// @Produce json
+// @Success 200 {object} responseDto.ResponseDto{data=responseDto.UserDto}
+// @Router /user/{userID} [get]
+func (controller *UserController) GetUserByID(c echo.Context) error {
+	userID, err := strconv.Atoi(c.Param("userID"))
+	if err != nil {
+		response := responseDto.NewResponse(
+			errorcodes.INVALID_ID,
+			"Invalid ID, must by a number",
+			nil,
+		)
+		return c.JSON(http.StatusNotFound, response)
+	}
+
+	user, err := controller.service.FindByID(uint(userID))
+	if err != nil {
+		response := responseDto.NewResponse(
+			errorcodes.NOT_FOUND,
+			err.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusNotFound, response)
+	}
+
+	response := responseDto.NewResponse(
+		errorcodes.OK,
+		"User Finded",
 		user,
 	)
 	return c.JSON(http.StatusOK, response)
