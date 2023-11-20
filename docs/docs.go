@@ -181,6 +181,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/": {
+            "put": {
+                "description": "Edit user loged usgin the cookie",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Edit user",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "Edit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requestDto.EditUserDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responseDto.ResponseDto"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/responseDto.UserDto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/user/all": {
             "get": {
                 "description": "List all users",
@@ -300,6 +346,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "requestDto.EditUserDto": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 5
+                }
+            }
+        },
         "requestDto.LoginUserDto": {
             "type": "object",
             "required": [

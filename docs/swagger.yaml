@@ -1,5 +1,13 @@
 basePath: /api/v1
 definitions:
+  requestDto.EditUserDto:
+    properties:
+      image:
+        type: string
+      name:
+        minLength: 5
+        type: string
+    type: object
   requestDto.LoginUserDto:
     properties:
       email:
@@ -147,6 +155,33 @@ paths:
       summary: Register new user
       tags:
       - Auth
+  /user/:
+    put:
+      consumes:
+      - application/json
+      description: Edit user loged usgin the cookie
+      parameters:
+      - description: request body
+        in: body
+        name: Edit
+        required: true
+        schema:
+          $ref: '#/definitions/requestDto.EditUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responseDto.ResponseDto'
+            - properties:
+                data:
+                  $ref: '#/definitions/responseDto.UserDto'
+              type: object
+      summary: Edit user
+      tags:
+      - User
   /user/{userID}:
     get:
       consumes:

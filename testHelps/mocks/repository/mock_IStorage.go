@@ -21,6 +21,41 @@ func (_m *MockIStorage) EXPECT() *MockIStorage_Expecter {
 	return &MockIStorage_Expecter{mock: &_m.Mock}
 }
 
+// EditUser provides a mock function with given fields: id, name, image
+func (_m *MockIStorage) EditUser(id uint, name string, image string) {
+	_m.Called(id, name, image)
+}
+
+// MockIStorage_EditUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EditUser'
+type MockIStorage_EditUser_Call struct {
+	*mock.Call
+}
+
+// EditUser is a helper method to define mock.On call
+//   - id uint
+//   - name string
+//   - image string
+func (_e *MockIStorage_Expecter) EditUser(id interface{}, name interface{}, image interface{}) *MockIStorage_EditUser_Call {
+	return &MockIStorage_EditUser_Call{Call: _e.mock.On("EditUser", id, name, image)}
+}
+
+func (_c *MockIStorage_EditUser_Call) Run(run func(id uint, name string, image string)) *MockIStorage_EditUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(uint), args[1].(string), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockIStorage_EditUser_Call) Return() *MockIStorage_EditUser_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *MockIStorage_EditUser_Call) RunAndReturn(run func(uint, string, string)) *MockIStorage_EditUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // FindUserByEmail provides a mock function with given fields: email
 func (_m *MockIStorage) FindUserByEmail(email string) models.User {
 	ret := _m.Called(email)

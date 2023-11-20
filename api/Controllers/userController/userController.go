@@ -1,9 +1,12 @@
 package usercontroller
 
 import (
+	requestDto "CardozoCasariegoLuciano/StudyNotes/Dto/RequestDto"
 	responseDto "CardozoCasariegoLuciano/StudyNotes/Dto/ResponseDto"
 	userservice "CardozoCasariegoLuciano/StudyNotes/Service/UserService"
+	customvalidator "CardozoCasariegoLuciano/StudyNotes/helpers/customValidator"
 	errorcodes "CardozoCasariegoLuciano/StudyNotes/helpers/errorCodes"
+	"CardozoCasariegoLuciano/StudyNotes/helpers/utils"
 	"net/http"
 	"strconv"
 
@@ -108,6 +111,55 @@ func (controller *UserController) GetUserByID(c echo.Context) error {
 	response := responseDto.NewResponse(
 		errorcodes.OK,
 		"User Finded",
+		user,
+	)
+	return c.JSON(http.StatusOK, response)
+}
+
+// EditUser godoc
+// @Summary Edit user
+// @Description Edit user loged usgin the cookie
+// @Tags User
+// @Accept json
+// @Param Edit body requestDto.EditUserDto true "request body"
+// @Produce json
+// @Success 200 {object} responseDto.ResponseDto{data=responseDto.UserDto}
+// @Router /user/ [PUT]
+func (controller *UserController) EditUser(c echo.Context) error {
+	userID := c.Get("userID")
+	data := requestDto.EditUserDto{}
+
+	if err := utils.BindBody(c, &data); err != nil {
+		response := responseDto.NewResponse(
+			errorcodes.BODY_TYPES_ERROR,
+			"Error con los datos enviados",
+			nil,
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	if err := c.Validate(&data); err != nil {
+		response := responseDto.NewResponse(
+			errorcodes.BODY_VALIDATION_ERROR,
+			"Error en la validacion de los datos enviados",
+			customvalidator.MapValidationErrors(err),
+		)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	user, err := controller.service.EditUser(userID.(uint), data.Name, data.Image)
+	if err != nil {
+		response := responseDto.NewResponse(
+			errorcodes.NOT_FOUND,
+			err.Error(),
+			nil,
+		)
+		return c.JSON(http.StatusNotFound, response)
+	}
+
+	response := responseDto.NewResponse(
+		errorcodes.OK,
+		"User edited",
 		user,
 	)
 	return c.JSON(http.StatusOK, response)

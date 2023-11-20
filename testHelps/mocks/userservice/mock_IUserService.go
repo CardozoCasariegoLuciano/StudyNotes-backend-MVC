@@ -21,6 +21,62 @@ func (_m *MockIUserService) EXPECT() *MockIUserService_Expecter {
 	return &MockIUserService_Expecter{mock: &_m.Mock}
 }
 
+// EditUser provides a mock function with given fields: id, name, image
+func (_m *MockIUserService) EditUser(id uint, name string, image string) (*responseDto.UserDto, error) {
+	ret := _m.Called(id, name, image)
+
+	var r0 *responseDto.UserDto
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint, string, string) (*responseDto.UserDto, error)); ok {
+		return rf(id, name, image)
+	}
+	if rf, ok := ret.Get(0).(func(uint, string, string) *responseDto.UserDto); ok {
+		r0 = rf(id, name, image)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*responseDto.UserDto)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint, string, string) error); ok {
+		r1 = rf(id, name, image)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockIUserService_EditUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'EditUser'
+type MockIUserService_EditUser_Call struct {
+	*mock.Call
+}
+
+// EditUser is a helper method to define mock.On call
+//   - id uint
+//   - name string
+//   - image string
+func (_e *MockIUserService_Expecter) EditUser(id interface{}, name interface{}, image interface{}) *MockIUserService_EditUser_Call {
+	return &MockIUserService_EditUser_Call{Call: _e.mock.On("EditUser", id, name, image)}
+}
+
+func (_c *MockIUserService_EditUser_Call) Run(run func(id uint, name string, image string)) *MockIUserService_EditUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(uint), args[1].(string), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockIUserService_EditUser_Call) Return(_a0 *responseDto.UserDto, _a1 error) *MockIUserService_EditUser_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockIUserService_EditUser_Call) RunAndReturn(run func(uint, string, string) (*responseDto.UserDto, error)) *MockIUserService_EditUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // FindByID provides a mock function with given fields: id
 func (_m *MockIUserService) FindByID(id uint) (*responseDto.UserDto, error) {
 	ret := _m.Called(id)

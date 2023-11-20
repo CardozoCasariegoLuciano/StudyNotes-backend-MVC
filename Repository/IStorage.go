@@ -7,4 +7,5 @@ type IStorage interface {
 	ListAllUsers(*[]models.User) error
 	FindUserByEmail(email string) models.User
 	GetUserByID(id uint) models.User
+	EditUser(id uint, name string, image string)
 }
