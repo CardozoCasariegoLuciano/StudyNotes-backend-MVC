@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	models "CardozoCasariegoLuciano/StudyNotes/Models"
 	"CardozoCasariegoLuciano/StudyNotes/configuration"
 	"fmt"
 	"sync"
@@ -28,6 +29,7 @@ func newDataBase() (db *gorm.DB) {
 		panic(err)
 	} else {
 		fmt.Println("Conexon de la base de datos exitosa")
+		models.UsersMigration(db)
 		return db
 	}
 }
