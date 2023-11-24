@@ -11,7 +11,7 @@ func setDefaultConfig(config *Configuration) *Configuration {
 	}
 
 	database := Database{
-		Port:     3607,
+		Port:     3606,
 		Host:     "localhost",
 		Password: "123123123",
 		User:     "root",

@@ -42,7 +42,7 @@ func (controller *UserController) All(c echo.Context) error {
 
 	response := responseDto.NewResponse(
 		errorcodes.OK,
-		"User created",
+		"User List",
 		map[string][]responseDto.UserDto{
 			"list": list,
 		},
